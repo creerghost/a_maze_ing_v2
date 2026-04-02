@@ -3,6 +3,9 @@ from MazeGenerator.constants import Themes, MazeConstants, MazeSymbols
 
 
 class MazeRenderer:
+    """
+    Renders bitmasked maze logically using ASCII graphics over a 2x canvas.
+    """
     def __init__(self, maze: List[List[int]], theme: Themes,
                  entry: Tuple[int, int] = None,
                  maze_exit: Tuple[int, int] = None):
@@ -12,6 +15,12 @@ class MazeRenderer:
         self.maze_exit = maze_exit
 
     def render(self) -> List[List[str]]:
+        """
+        Translates maze array into a 2D string matrix array for console print.
+
+        Returns:
+            List[List[str]]: Grid string map containing walls, pattern blocks.
+        """
         if not self.maze or not self.maze[0]:
             return []
 

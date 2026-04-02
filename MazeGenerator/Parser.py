@@ -3,10 +3,28 @@ from MazeGenerator.exceptions import ParserError
 
 
 class Parser:
+    """
+    Parses configuration files containing map bounds and runtime variables.
+    """
     def __init__(self, config_file: str):
+        """
+        Initializes the parser targeting a specific configuration text file.
+
+        Args:
+            config_file (str): System path to configuration text file.
+        """
         self.config_file = config_file
 
     def parse(self) -> Dict[str, Any]:
+        """
+        Ingests config text line by line and outputs a validated config dict.
+
+        Returns:
+            Dict[str, Any]: Dict storing parsed config params.
+
+        Raises:
+            ParserError: If syntax, types, or bounds are structurally invalid.
+        """
         result: Dict[str, Any] = {}
         with open(self.config_file, 'r') as f:
             for line_num, line in enumerate(f, 1):

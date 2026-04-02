@@ -1,9 +1,17 @@
+"""
+Entry point for A-Maze-Ing.
+Bootstraps parser and generator.
+"""
 import sys
 import os
+import time
+from typing import Dict, Any
+
 from MazeGenerator.Parser import Parser
 from MazeGenerator.exceptions import ParserError
 from MazeGenerator.MazeRenderer import MazeRenderer
-from typing import Dict, Any
+from MazeGenerator.constants import Themes
+from MazeGenerator.algorithms import DFSAlgorithm
 
 
 def print_menu() -> None:
@@ -35,9 +43,7 @@ def main() -> None:
         print(f"ParserError: {e}")
         sys.exit(1)
 
-    from MazeGenerator.constants import Themes
-    from MazeGenerator.algorithms import DFSAlgorithm
-    import time
+        sys.exit(1)
 
     algorithm: DFSAlgorithm = DFSAlgorithm(config['WIDTH'], config['HEIGHT'])
 

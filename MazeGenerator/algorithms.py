@@ -1,22 +1,44 @@
 from abc import ABC, abstractmethod
-from typing import List, Tuple, Deque
+from typing import List, Tuple, Deque, Generator
 from MazeGenerator.constants import MazeConstants, Directions
 import random
 from collections import deque
 
 
 class MazeAlgorithm(ABC):
+    """
+    Abstract base defining the contract for maze generation algorithms.
+    """
     def __init__(self, width: int, height: int) -> None:
+        """
+        Initializes the base attributes for maze generation.
+
+        Args:
+            width (int): The number of cells horizontally.
+            height (int): The number of cells vertically.
+        """
         self.width = width
         self.height = height
         self.maze: List[List[int]] = [[0 for _ in range(width)]
                                       for _ in range(height)]
 
     @abstractmethod
-    def generate(self) -> List[List[int]]:
+    def generate(self) -> Generator[List[List[int]], None, None]:
+        """
+        Generates the maze iteratively, yielding intermediate maze states.
+
+        Yields:
+            List[List[int]]: 2D grid array of bitmasked cells or walls.
+        """
         pass
 
     def apply_42_pattern(self) -> List[Tuple[int, int]]:
+        """
+        Injects a structural '42' pattern strictly into the maze center.
+
+        Returns:
+            List[Tuple[int, int]]: Pattern cells shielded from generation.
+        """
         pattern: List[List[int]] = MazeConstants.P_42.value
         p_h: int = len(pattern)
         p_w: int = len(pattern[0])
@@ -33,15 +55,18 @@ class MazeAlgorithm(ABC):
                     my: int = start_y + py
                     mx: int = start_x + px
                     cells.append((mx, my))
-                    self.maze[my][mx] = 15
+                    self.maze[my][mx] = 15  # Solid, intact wall representation
         return cells
 
 
 class DFSAlgorithm(MazeAlgorithm):
+    """
+    Standard Depth-First Search recursive backtracker structural generator.
+    """
     def __init__(self, width: int, height: int) -> None:
         super().__init__(width, height)
 
-    def generate(self) -> List[List[int]]:
+    def generate(self) -> Generator[List[List[int]], None, None]:
         for y in range(self.height):
             for x in range(self.width):
                 self.maze[y][x] = 15
