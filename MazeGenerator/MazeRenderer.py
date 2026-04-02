@@ -1,4 +1,4 @@
-from typing import List, Tuple
+from typing import List, Tuple, Optional
 from MazeGenerator.constants import Themes, MazeConstants, MazeSymbols
 
 
@@ -7,8 +7,8 @@ class MazeRenderer:
     Renders bitmasked maze logically using ASCII graphics over a 2x canvas.
     """
     def __init__(self, maze: List[List[int]], theme: Themes,
-                 entry: Tuple[int, int] = None,
-                 maze_exit: Tuple[int, int] = None):
+                 entry: Optional[Tuple[int, int]] = None,
+                 maze_exit: Optional[Tuple[int, int]] = None):
         self.maze = maze
         self.theme = theme
         self.entry = entry

@@ -2,6 +2,7 @@
 Entry point for A-Maze-Ing.
 Bootstraps parser and generator.
 """
+
 import sys
 import os
 import time

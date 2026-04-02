@@ -80,8 +80,8 @@ class DFSAlgorithm(MazeAlgorithm):
             for px, py in pattern_cells:
                 visited[py][px] = True
 
-            start_x: int = random.randint(0, self.width - 1)
-            start_y: int = random.randint(0, self.height - 1)
+            start_x = random.randint(0, self.width - 1)
+            start_y = random.randint(0, self.height - 1)
             while visited[start_y][start_x]:
                 start_x = random.randint(0, self.width - 1)
                 start_y = random.randint(0, self.height - 1)
@@ -89,8 +89,8 @@ class DFSAlgorithm(MazeAlgorithm):
             stack.append((start_x, start_y))
             visited[start_y][start_x] = True
         else:
-            start_x: int = random.randint(0, self.width - 1)
-            start_y: int = random.randint(0, self.height - 1)
+            start_x = random.randint(0, self.width - 1)
+            start_y = random.randint(0, self.height - 1)
             stack.append((start_x, start_y))
             visited[start_y][start_x] = True
 

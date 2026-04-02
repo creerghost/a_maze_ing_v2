@@ -21,3 +21,11 @@ clean:
 	rm -rf $(VENV) maze.txt
 	find . -name "__pycache__" -exec rm -rf {} + 
 	find . -name "*.pyc" -exec rm -rf {} + 
+
+lint: venv
+	$(PYTHON_VENV) -m flake8 . --exclude=$(VENV),build,dist
+	$(PYTHON_VENV) -m mypy . --exclude $(VENV) --ignore-missing-imports --disallow-untyped-defs
+
+lint-strict: venv
+	$(PYTHON_VENV) -m flake8 . --exclude=$(VENV),build,dist
+	$(PYTHON_VENV) -m mypy . --exclude $(VENV) --strict
