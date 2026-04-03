@@ -98,8 +98,12 @@ class MazeEngine:
                 break
             elif command == "a":
                 self.toggle_algorithm()
+                if self.show_solution is True:
+                    self.toggle_solution_visibility()
                 self.generate_new_maze(animate=True)
             elif command == "g":
+                if self.show_solution is True:
+                    self.toggle_solution_visibility()
                 self.generate_new_maze(animate=True)
             elif command == "s":
                 self.toggle_solution_visibility()

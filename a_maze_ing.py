@@ -39,14 +39,16 @@ def main() -> None:
     except ParserError as e:
         print(f"ParserError: {e}")
         sys.exit(1)
-
-    engine = MazeEngine(
-        config['WIDTH'],
-        config['HEIGHT'],
-        config['ENTRY'],
-        config['EXIT'],
-    )
-    engine.run(print_menu)
+    try:
+        engine = MazeEngine(
+            config['WIDTH'],
+            config['HEIGHT'],
+            config['ENTRY'],
+            config['EXIT'],
+        )
+        engine.run(print_menu)
+    except NotImplementedError as e:
+        print(f"Error: {e}")
 
 
 if __name__ == "__main__":
