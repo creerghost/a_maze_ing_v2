@@ -8,11 +8,13 @@ class MazeRenderer:
     """
     def __init__(self, maze: List[List[int]], theme: Themes,
                  entry: Optional[Tuple[int, int]] = None,
-                 maze_exit: Optional[Tuple[int, int]] = None):
+                 maze_exit: Optional[Tuple[int, int]] = None,
+                 solution_path: Optional[List[Tuple[int, int]]] = None):
         self.maze = maze
         self.theme = theme
         self.entry = entry
         self.maze_exit = maze_exit
+        self.solution_path = solution_path
 
     def render(self) -> List[List[str]]:
         """
@@ -67,6 +69,14 @@ class MazeRenderer:
                         output[cy][cx + 1] = path_char
                     if not (cell & MazeConstants.W.value):
                         output[cy][cx - 1] = path_char
+
+        if self.solution_path:
+            solved_char: str = (
+                f"\033[96m{MazeSymbols.SOLVED_PATH.value}{reset_c}"
+            )
+            for sx, sy in self.solution_path:
+                if 0 <= sy < height and 0 <= sx < width:
+                    output[sy * 2 + 1][sx * 2 + 1] = solved_char
 
         if self.entry:
             ex, ey = self.entry
