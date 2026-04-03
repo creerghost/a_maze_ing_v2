@@ -5,14 +5,11 @@ Bootstraps parser and generator.
 
 import sys
 import os
-import time
 from typing import Dict, Any
 
 from MazeGenerator.Parser import Parser
 from MazeGenerator.exceptions import ParserError
-from MazeGenerator.MazeRenderer import MazeRenderer
-from MazeGenerator.constants import Themes
-from MazeGenerator.algorithms import DFSAlgorithm
+from MazeGenerator.MazeEngine import MazeEngine
 
 
 def print_menu() -> None:
@@ -39,30 +36,17 @@ def main() -> None:
     try:
         parser: Parser = Parser(config_file)
         config: Dict[str, Any] = parser.parse()
-        print(config)
     except ParserError as e:
         print(f"ParserError: {e}")
         sys.exit(1)
 
-        sys.exit(1)
-
-    algorithm: DFSAlgorithm = DFSAlgorithm(config['WIDTH'], config['HEIGHT'])
-
-    theme = Themes.CLASSIC
-
-    for maze_state in algorithm.generate():
-        renderer: MazeRenderer = MazeRenderer(
-            maze_state, theme,
-            config.get('ENTRY'), config.get('EXIT')
-        )
-        output = renderer.render()
-
-        os.system('cls' if os.name == 'nt' else 'clear')
-
-        for row in output:
-            print("".join(row))
-
-        time.sleep(0.01)
+    engine = MazeEngine(
+        config['WIDTH'],
+        config['HEIGHT'],
+        config['ENTRY'],
+        config['EXIT'],
+    )
+    engine.run(print_menu)
 
 
 if __name__ == "__main__":
