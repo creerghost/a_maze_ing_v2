@@ -4,8 +4,9 @@ from typing import Callable, List, Optional, Tuple
 from MazeGenerator.constants import Themes
 from MazeGenerator.algorithms import MazeAlgorithm
 from MazeGenerator.algorithms import DFSAlgorithm
+from MazeGenerator.algorithms import KruskalAlgorithm
 from MazeGenerator.MazeRenderer import MazeRenderer
-from MazeGenerator.solver import solve_maze
+from MazeGenerator.solver import MazeSolver
 
 
 class MazeEngine:
@@ -46,8 +47,7 @@ class MazeEngine:
         """Returns the selected algorithm instance."""
         if self.algorithm_name == "dfs":
             return DFSAlgorithm(self.width, self.height)
-        else:
-            raise NotImplementedError("Kruskal not ready yet")
+        return KruskalAlgorithm(self.width, self.height)
 
     def _render_frame(self, maze_state: List[List[int]]) -> None:
         """Clears screen and renders one maze state using current theme."""
@@ -59,13 +59,25 @@ class MazeEngine:
             self.maze_exit,
             self.solution_path if self.show_solution else None,
         )
-        output = renderer.render()  # Returns a 2D list of strings
+        # Convert to 2D grid chunks & return printable list of strings
+        output = renderer.render()
         for row in output:
             print("".join(row))
+        print(
+            f"\nAlgorithm: {self.algorithm_name.upper()} | "
+            f"Grid: {self.width}x{self.height} | "
+            f"Theme: {self.theme.value.name} | "
+            f"Solution: {'ON' if self.show_solution else 'OFF'}"
+        )
 
     def generate_new_maze(self, animate: bool = True) -> None:
         """Generates a new maze and stores in self.current_maze."""
         algorithm = self._build_algorithm()
+        previous_solution_state = self.show_solution
+
+        # Keep the user's toggle choice, but hide the overlay while carving.
+        if animate:
+            self.show_solution = False
 
         # Loop through each intermediate maze state
         for maze_state in algorithm.generate():
@@ -76,11 +88,13 @@ class MazeEngine:
                 time.sleep(0.01)
 
         if self.current_maze is not None:
-            self.solution_path = solve_maze(
+            solver = MazeSolver(
                 self.current_maze,
                 self.entry,
                 self.maze_exit,
             )
+            self.solution_path = solver.solve()
+            self.show_solution = previous_solution_state
             self._render_frame(self.current_maze)
 
     def run(self, print_menu: Callable[[], None]) -> None:
@@ -98,12 +112,8 @@ class MazeEngine:
                 break
             elif command == "a":
                 self.toggle_algorithm()
-                if self.show_solution is True:
-                    self.toggle_solution_visibility()
                 self.generate_new_maze(animate=True)
             elif command == "g":
-                if self.show_solution is True:
-                    self.toggle_solution_visibility()
                 self.generate_new_maze(animate=True)
             elif command == "s":
                 self.toggle_solution_visibility()

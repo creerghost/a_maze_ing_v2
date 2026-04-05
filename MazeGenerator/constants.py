@@ -37,9 +37,10 @@ class Theme:
     name: str
     wall_color: str
     path_color: str
+    pattern_color: str
 
 
 class Themes(Enum):
-    CLASSIC = Theme("classic", "\033[97m", "\033[91m")
-    NEON = Theme("neon", "\033[95m", "\033[92m")
-    LIGHT = Theme("light", "\033[90m", "\033[93m")
+    CLASSIC = Theme("classic", "\033[97m", "\033[91m", "\033[90m")
+    NEON = Theme("neon", "\033[95m", "\033[92m", "\033[90m")
+    LIGHT = Theme("light", "\033[90m", "\033[93m", "\033[97m")

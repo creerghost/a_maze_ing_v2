@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import List, Tuple, Deque, Generator
+from typing import Dict, Generator, List, Tuple, Deque
 from MazeGenerator.constants import MazeConstants, Directions
 import random
 from collections import deque
@@ -126,4 +126,125 @@ class DFSAlgorithm(MazeAlgorithm):
                     break
             if not moved:
                 stack.pop()
+            yield self.maze
+
+
+class _UnionFind:
+    """
+    Groups cells together so Kruskal can avoid loops.
+
+    Kruskal Algo builds a tree:
+    Union-Find instantly checks if two cells are connected.
+    Union-by-rank + path compression together keep trees shallow.
+    """
+    def __init__(self, nodes: List[Tuple[int, int]]) -> None:
+        self.parent: Dict[Tuple[int, int], Tuple[int, int]] = {
+            node: node for node in nodes
+        }
+        # rank = height estimate (used for union-by-rank)
+        # not exact node-to-root distance
+        self.rank: Dict[Tuple[int, int], int] = {node: 0 for node in nodes}
+
+    def find(self, node: Tuple[int, int]) -> Tuple[int, int]:
+        """
+        Finds the group leader (root) for a cell.
+        Also compresses the path to optimize speed.
+        """
+        root = node
+        while self.parent[root] != root:
+            root = self.parent[root]
+
+        # Path compression: point every node on this find path directly to root
+        while node != root:
+            parent = self.parent[node]
+            self.parent[node] = root
+            node = parent
+
+        return root
+
+    def union(self, a: Tuple[int, int], b: Tuple[int, int]) -> bool:
+        """Joins two groups"""
+        root_a = self.find(a)
+        root_b = self.find(b)
+
+        if root_a == root_b:  # Already in the same set; no merge needed
+            return False
+
+        # Merge by rank; caller can use True to carve passage
+        rank_a = self.rank[root_a]
+        rank_b = self.rank[root_b]
+
+        if rank_a < rank_b:
+            self.parent[root_a] = root_b
+        elif rank_a > rank_b:
+            self.parent[root_b] = root_a
+        else:
+            self.parent[root_b] = root_a
+            self.rank[root_a] += 1
+
+        return True
+
+
+class KruskalAlgorithm(MazeAlgorithm):
+    """
+    Randomized Kruskal-based structural generator using Union-Find.
+
+    It shuffles possible links between neighbor cells and opens a wall only
+    when the two cells are in different groups.
+    """
+    def __init__(self, width: int, height: int) -> None:
+        super().__init__(width, height)
+
+    def generate(self) -> Generator[List[List[int]], None, None]:
+        for y in range(self.height):
+            for x in range(self.width):
+                self.maze[y][x] = 15
+
+        blocked = set(self.apply_42_pattern())
+
+        nodes: List[Tuple[int, int]] = []
+        for y in range(self.height):
+            for x in range(self.width):
+                if (x, y) not in blocked:
+                    nodes.append((x, y))
+
+        if not nodes:
+            yield self.maze
+            return
+
+        uf = _UnionFind(nodes)
+        edges: List[Tuple[Tuple[int, int], Tuple[int, int], int, int]] = []
+
+        # Find candidate walls to carve a path
+        for y in range(self.height):
+            for x in range(self.width):
+                if (x, y) in blocked:
+                    continue
+
+                if x + 1 < self.width and (x + 1, y) not in blocked:
+                    edges.append(
+                                ((x, y), (x + 1, y),
+                                    MazeConstants.E.value,
+                                    MazeConstants.W.value)
+                            )
+
+                if y + 1 < self.height and (x, y + 1) not in blocked:
+                    edges.append(
+                        ((x, y), (x, y + 1),
+                            MazeConstants.S.value, MazeConstants.N.value)
+                    )
+
+        random.shuffle(edges)
+
+        carved = False
+        for (ax, ay), (bx, by), wall_a, wall_b in edges:
+            # Carve only if cells are in different groups
+            if uf.union((ax, ay), (bx, by)):
+                self.maze[ay][ax] &= ~wall_a
+                self.maze[by][bx] &= ~wall_b
+                carved = True
+                yield self.maze
+
+        if not carved:
+            # Engine still receives final state for tiny mazes
             yield self.maze
