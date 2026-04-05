@@ -72,7 +72,7 @@ class MazeRenderer:
 
         if self.solution_path:
             solved_char: str = (
-                f"\033[1;38;5;226m{MazeSymbols.WALL.value}{reset_c}"
+                f"\033[1;38;5;226m{MazeSymbols.SOLVED_PATH.value}{reset_c}"
             )
             prev: Optional[Tuple[int, int]] = None
             for sx, sy in self.solution_path:
