@@ -26,12 +26,14 @@ class MazeEngine:
                  height: int,
                  entry: Tuple[int, int],
                  maze_exit: Tuple[int, int],
-                 algorithm_name: str = "dfs"
+                 algorithm_name: str = "dfs",
+                 render_delay: float = 0.01
                  ) -> None:
         self.width = width
         self.height = height
         self.entry = entry
         self.maze_exit = maze_exit
+        self.render_delay = render_delay
 
         self.algorithm_name: str = algorithm_name.lower()
         if self.algorithm_name not in ("dfs", "kruskal"):
@@ -110,7 +112,7 @@ class MazeEngine:
             self.current_maze = [row[:] for row in maze_state]
             if animate:
                 self._render_frame(self.current_maze)
-                time.sleep(0.01)
+                time.sleep(self.render_delay)
 
         if self.current_maze is not None:
             solver = MazeSolver(

@@ -46,6 +46,7 @@ def main() -> None:
             config['ENTRY'],
             config['EXIT'],
             config.get('ALGORITHM', 'dfs'),
+            config.get('RENDER_DELAY', 0.02),
         )
         engine.run(print_menu)
     except NotImplementedError as e:

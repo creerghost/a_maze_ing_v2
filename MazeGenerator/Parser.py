@@ -59,6 +59,8 @@ class Parser:
                                     "Invalid value for key ALGORITHM"
                                 )
                             result[key] = algo
+                        elif key == 'RENDER_DELAY':
+                            result[key] = float(value)
                         else:
                             result[key] = value
                     except ValueError:
@@ -72,7 +74,8 @@ class Parser:
             'ENTRY': tuple,
             'EXIT': tuple,
             'PERFECT': bool,
-            'OUTPUT_FILE': str
+            'OUTPUT_FILE': str,
+            'RENDER_DELAY': float
         }
 
         for key, expected_type in expected_schema.items():
