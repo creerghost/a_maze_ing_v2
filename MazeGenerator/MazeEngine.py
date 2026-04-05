@@ -14,14 +14,19 @@ class MazeEngine:
                  width: int,
                  height: int,
                  entry: Tuple[int, int],
-                 maze_exit: Tuple[int, int]
+                 maze_exit: Tuple[int, int],
+                 algorithm_name: str = "dfs"
                  ) -> None:
         self.width = width
         self.height = height
         self.entry = entry
         self.maze_exit = maze_exit
 
-        self.algorithm_name: str = "dfs"
+        self.algorithm_name: str = algorithm_name.lower()
+        if self.algorithm_name not in ("dfs", "kruskal"):
+            raise ValueError(
+                "algorithm_name must be 'dfs' or 'kruskal'"
+            )
         self.theme_options: List[Themes] = list(Themes)
         self.theme_index: int = 0
         self.show_solution: bool = False

@@ -52,6 +52,13 @@ class Parser:
                             result[key] = value.lower() == 'true'
                         elif key == 'OUTPUT_FILE':
                             result[key] = str(value)
+                        elif key == 'ALGORITHM':
+                            algo = value.lower()
+                            if algo not in ('dfs', 'kruskal'):
+                                raise ParserError(
+                                    "Invalid value for key ALGORITHM"
+                                )
+                            result[key] = algo
                         else:
                             result[key] = value
                     except ValueError:

@@ -45,6 +45,7 @@ def main() -> None:
             config['HEIGHT'],
             config['ENTRY'],
             config['EXIT'],
+            config.get('ALGORITHM', 'dfs'),
         )
         engine.run(print_menu)
     except NotImplementedError as e:
