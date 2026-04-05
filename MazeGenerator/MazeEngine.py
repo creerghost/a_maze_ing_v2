@@ -10,6 +10,17 @@ from MazeGenerator.solver import MazeSolver
 
 
 class MazeEngine:
+    DFS_THEMES: List[Themes] = [
+        Themes.CLASSIC,
+        Themes.NEON,
+        Themes.LIGHT,
+    ]
+    KRUSKAL_THEMES: List[Themes] = [
+        Themes.BIOHAZARD,
+        Themes.QUARANTINE,
+        Themes.VIRUS,
+    ]
+
     def __init__(self,
                  width: int,
                  height: int,
@@ -27,11 +38,12 @@ class MazeEngine:
             raise ValueError(
                 "algorithm_name must be 'dfs' or 'kruskal'"
             )
-        self.theme_options: List[Themes] = list(Themes)
+        self.theme_options: List[Themes] = []
         self.theme_index: int = 0
         self.show_solution: bool = False
         self.solution_path: Optional[List[Tuple[int, int]]] = None
         self.current_maze: Optional[List[List[int]]] = None
+        self._set_theme_pool_for_algorithm()
 
     @property
     def theme(self) -> Themes:
@@ -40,10 +52,18 @@ class MazeEngine:
     def cycle_theme(self) -> None:
         self.theme_index = (self.theme_index + 1) % len(self.theme_options)
 
+    def _set_theme_pool_for_algorithm(self) -> None:
+        if self.algorithm_name == "kruskal":
+            self.theme_options = self.KRUSKAL_THEMES[:]
+        else:
+            self.theme_options = self.DFS_THEMES[:]
+        self.theme_index = 0
+
     def toggle_algorithm(self) -> None:
         self.algorithm_name = (
             "kruskal" if self.algorithm_name == "dfs" else "dfs"
         )
+        self._set_theme_pool_for_algorithm()
 
     def toggle_solution_visibility(self) -> None:
         self.show_solution = not self.show_solution

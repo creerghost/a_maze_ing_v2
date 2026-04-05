@@ -44,3 +44,9 @@ class Themes(Enum):
     CLASSIC = Theme("classic", "\033[97m", "\033[91m", "\033[90m")
     NEON = Theme("neon", "\033[95m", "\033[92m", "\033[90m")
     LIGHT = Theme("light", "\033[90m", "\033[93m", "\033[97m")
+    BIOHAZARD = Theme("biohazard", "\033[38;5;203m", "\033[38;5;39m",
+                      "\033[38;5;88m")
+    QUARANTINE = Theme("quarantine", "\033[38;5;159m", "\033[38;5;197m",
+                       "\033[38;5;60m")
+    VIRUS = Theme("virus", "\033[38;5;177m", "\033[38;5;51m",
+                  "\033[38;5;90m")
