@@ -4,67 +4,70 @@ from typing import List, Tuple, Optional
 from MazeGenerator.constants import MazeConstants
 
 
-def solve_maze(
-    maze: List[List[int]],
-    entry: Tuple[int, int],
-    exit: Tuple[int, int],
-) -> Optional[List[Tuple[int, int]]]:
-    height = len(maze)
-    width = len(maze[0]) if maze else 0
+class MazeSolver:
+    def __init__(self, maze: List[List[int]], entry: Tuple[int, int],
+                 maze_exit: Tuple[int, int]) -> None:
+        self.maze = maze
+        self.entry = entry
+        self.maze_exit = maze_exit
 
-    queue = deque([entry])
-    visited = {entry}
-    parent: dict[Tuple[int, int], Tuple[int, int]] = {}
+    def solve(self) -> Optional[List[Tuple[int, int]]]:
+        height = len(self.maze)
+        width = len(self.maze[0]) if self.maze else 0
 
-    while queue:
-        current = queue.popleft()
+        queue = deque([self.entry])
+        visited = {self.entry}
+        parent: dict[Tuple[int, int], Tuple[int, int]] = {}
 
-        if current == exit:
-            break
+        while queue:
+            current = queue.popleft()
 
-        x, y = current
-        cell = maze[y][x]
+            if current == self.maze_exit:
+                break
 
-        # north
-        if y > 0 and not (cell & MazeConstants.N.value):
-            nx, ny = x, y - 1
-            if maze[ny][nx] != 15 and (nx, ny) not in visited:
-                visited.add((nx, ny))
-                parent[(nx, ny)] = (x, y)
-                queue.append((nx, ny))
+            x, y = current
+            cell = self.maze[y][x]
 
-        # south
-        if y < height - 1 and not (cell & MazeConstants.S.value):
-            nx, ny = x, y + 1
-            if maze[ny][nx] != 15 and (nx, ny) not in visited:
-                visited.add((nx, ny))
-                parent[(nx, ny)] = (x, y)
-                queue.append((nx, ny))
+            # north
+            if y > 0 and not (cell & MazeConstants.N.value):
+                nx, ny = x, y - 1
+                if self.maze[ny][nx] != 15 and (nx, ny) not in visited:
+                    visited.add((nx, ny))
+                    parent[(nx, ny)] = (x, y)
+                    queue.append((nx, ny))
 
-        # east
-        if x < width - 1 and not (cell & MazeConstants.E.value):
-            nx, ny = x + 1, y
-            if maze[ny][nx] != 15 and (nx, ny) not in visited:
-                visited.add((nx, ny))
-                parent[(nx, ny)] = (x, y)
-                queue.append((nx, ny))
+            # south
+            if y < height - 1 and not (cell & MazeConstants.S.value):
+                nx, ny = x, y + 1
+                if self.maze[ny][nx] != 15 and (nx, ny) not in visited:
+                    visited.add((nx, ny))
+                    parent[(nx, ny)] = (x, y)
+                    queue.append((nx, ny))
 
-        # west
-        if x > 0 and not (cell & MazeConstants.W.value):
-            nx, ny = x - 1, y
-            if maze[ny][nx] != 15 and (nx, ny) not in visited:
-                visited.add((nx, ny))
-                parent[(nx, ny)] = (x, y)
-                queue.append((nx, ny))
+            # east
+            if x < width - 1 and not (cell & MazeConstants.E.value):
+                nx, ny = x + 1, y
+                if self.maze[ny][nx] != 15 and (nx, ny) not in visited:
+                    visited.add((nx, ny))
+                    parent[(nx, ny)] = (x, y)
+                    queue.append((nx, ny))
 
-    if exit not in visited:
-        return None
+            # west
+            if x > 0 and not (cell & MazeConstants.W.value):
+                nx, ny = x - 1, y
+                if self.maze[ny][nx] != 15 and (nx, ny) not in visited:
+                    visited.add((nx, ny))
+                    parent[(nx, ny)] = (x, y)
+                    queue.append((nx, ny))
 
-    path: List[Tuple[int, int]] = [exit]
-    current = exit
-    while current != entry:
-        current = parent[current]
-        path.append(current)
+        if self.maze_exit not in visited:
+            return None
 
-    path.reverse()
-    return path
+        path: List[Tuple[int, int]] = [self.maze_exit]
+        current = self.maze_exit
+        while current != self.entry:
+            current = parent[current]
+            path.append(current)
+
+        path.reverse()
+        return path
