@@ -37,7 +37,7 @@ class MazeRenderer:
 
         wall_char: str = f"{wall_c}{MazeSymbols.WALL.value}{reset_c}"
         path_char: str = f"{path_c}{MazeSymbols.PATH.value}{reset_c}"
-        pattern_color: str = "\033[90m"
+        pattern_color: str = self.theme.value.pattern_color
         fill_char: str = f"{pattern_color}{MazeSymbols.WALL.value}{reset_c}"
 
         output: List[List[str]] = [[wall_char for _ in range(grid_w)]
@@ -72,11 +72,28 @@ class MazeRenderer:
 
         if self.solution_path:
             solved_char: str = (
-                f"\033[96m{MazeSymbols.SOLVED_PATH.value}{reset_c}"
+                f"\033[1;38;5;226m{MazeSymbols.WALL.value}{reset_c}"
             )
+            prev: Optional[Tuple[int, int]] = None
             for sx, sy in self.solution_path:
-                if 0 <= sy < height and 0 <= sx < width:
-                    output[sy * 2 + 1][sx * 2 + 1] = solved_char
+                if not (0 <= sy < height and 0 <= sx < width):
+                    continue
+
+                gx: int = sx * 2 + 1
+                gy: int = sy * 2 + 1
+                output[gy][gx] = solved_char
+
+                if prev is not None:
+                    px, py = prev
+                    pgx: int = px * 2 + 1
+                    pgy: int = py * 2 + 1
+
+                    if sx != px:
+                        output[pgy][(pgx + gx) // 2] = solved_char
+                    elif sy != py:
+                        output[(pgy + gy) // 2][pgx] = solved_char
+
+                prev = (sx, sy)
 
         if self.entry:
             ex, ey = self.entry
