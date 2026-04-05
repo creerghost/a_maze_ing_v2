@@ -22,7 +22,7 @@ class MazeSymbols(Enum):
     PATH = "  "
     ENTRY = "●→"
     EXIT = "←●"
-    SOLVED_PATH = "░░"
+    SOLVED_PATH = "▒▒"
 
 
 class Directions(Enum):
