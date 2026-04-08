@@ -6,4 +6,4 @@ OUTPUT_FILE=maze.txt
 # PERFECT=True
 RENDER_DELAY=0.01
 ALGO=kruskal
-# SEED=42
+SEED=42
