@@ -1,10 +1,11 @@
 import os
 import time
+import random
 from typing import List, Optional, Tuple
 from MazeGenerator.constants import Themes
 from MazeGenerator.algorithms import MazeAlgorithm, ALGORITHMS_REGISTRY
 from MazeGenerator.MazeRenderer import MazeRenderer
-from MazeGenerator.solver import MazeSolver
+from MazeGenerator.MazeSolver import MazeSolver
 
 
 class MazeEngine:
@@ -16,8 +17,9 @@ class MazeEngine:
                  entry: Tuple[int, int],
                  maze_exit: Tuple[int, int],
                  output_file: str,
-                 algorithm_name: str = "dfs",
-                 render_delay: float = 0.01
+                 algorithm_name: str,
+                 render_delay: float = 0.01,
+                 seed: Optional[int] = None
                  ) -> None:
         self.width = width
         self.height = height
@@ -27,12 +29,12 @@ class MazeEngine:
         self.render_delay = render_delay
 
         self.algorithm_name: str = algorithm_name.lower()
-        if self.algorithm_name not in ALGORITHMS_REGISTRY:
-            self.algorithm_name = "dfs"
         self.theme_index: int = 0
         self.show_solution: bool = False
         self.solution_path: Optional[List[Tuple[int, int]]] = None
         self.current_maze: Optional[List[List[int]]] = None
+        self.initial_seed = seed
+        self.current_seed: Optional[int] = None
 
     @property
     def theme(self) -> Themes:
@@ -72,11 +74,19 @@ class MazeEngine:
             f"\nAlgorithm: {self.algorithm_name.upper()} | "
             f"Grid: {self.width}x{self.height} | "
             f"Theme: {self.theme.value.name} | "
-            f"Solution: {'ON' if self.show_solution else 'OFF'}"
+            f"Solution: {'ON' if self.show_solution else 'OFF'} | "
+            f"Seed: {self.current_seed}"
         )
 
     def generate_new_maze(self, animate: bool = True) -> None:
         """Generates a new maze and stores in self.current_maze."""
+        if self.current_seed is None and self.initial_seed is not None:
+            self.current_seed = self.initial_seed
+        else:
+            self.current_seed = random.randint(0, 999999999)
+
+        random.seed(self.current_seed)
+
         algorithm = self._build_algorithm()
         previous_solution_state = self.show_solution
 
@@ -112,11 +122,11 @@ class MazeEngine:
             for row in self.current_maze:
                 line = "".join(f"{cell:X}" for cell in row)
                 f.write(line + "\n")
-            
+
             f.write("\n")
             f.write(f"{self.entry[0]},{self.entry[1]}\n")
             f.write(f"{self.maze_exit[0]},{self.maze_exit[1]}\n")
-            
+
             if self.solution_path:
                 path_str = ""
                 for i in range(len(self.solution_path) - 1):

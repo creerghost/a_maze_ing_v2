@@ -1,6 +1,9 @@
 from typing import Dict, Any
-from MazeGenerator.exceptions import ParserError
 from MazeGenerator.algorithms import ALGORITHMS_REGISTRY
+
+
+class ParserError(Exception):
+    pass
 
 
 class Parser:
@@ -28,42 +31,54 @@ class Parser:
         """
         result: Dict[str, Any] = {}
         with open(self.config_file, 'r') as f:
+
             for line_num, line in enumerate(f, 1):
                 line = line.strip()
                 if not line or line.startswith('#'):
                     continue
+
                 if '=' in line:
                     key: str = ""
                     value: str = ""
                     key, value = line.split('=', 1)
                     key = key.strip()
                     value = value.strip()
+
                     try:
                         if key in ('WIDTH', 'HEIGHT'):
                             result[key] = int(value)
+
                         elif key in ('ENTRY', 'EXIT'):
                             x: str = ""
                             y: str = ""
                             x, y = value.split(',')
                             result[key] = (int(x), int(y))
+
                         elif key == 'PERFECT':
                             if value.lower() not in ('true', 'false'):
                                 raise ParserError(f"Invalid value "
                                                   f"for boolean key {key}")
                             result[key] = value.lower() == 'true'
+
                         elif key == 'OUTPUT_FILE':
                             result[key] = str(value)
-                        elif key == 'ALGORITHM':
+
+                        elif key == 'ALGORITHM' or key == 'ALGO':
                             algo = value.lower()
                             if algo not in ALGORITHMS_REGISTRY:
                                 raise ParserError(
-                                    f"Invalid value for key ALGORITHM. "
+                                    f"Invalid value for key {key}. "
                                     f"Available algorithms: "
                                     f"{', '.join(ALGORITHMS_REGISTRY.keys())}"
                                 )
                             result[key] = algo
+
                         elif key == 'RENDER_DELAY':
                             result[key] = float(value)
+
+                        elif key == 'SEED':
+                            result[key] = int(value)
+
                         else:
                             result[key] = value
                     except ValueError:

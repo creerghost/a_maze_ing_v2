@@ -6,8 +6,7 @@ Bootstraps parser and generator.
 import sys
 import os
 from typing import Dict, Any
-from MazeGenerator.Parser import Parser
-from MazeGenerator.exceptions import ParserError
+from MazeGenerator.Parser import Parser, ParserError
 from MazeGenerator.MazeEngine import MazeEngine
 
 
@@ -21,14 +20,9 @@ def main() -> None:
     if not os.path.exists(config_file):
         print(f"Error: Config file '{config_file}' not found.")
         sys.exit(1)
-
     try:
         parser: Parser = Parser(config_file)
         config: Dict[str, Any] = parser.parse()
-    except ParserError as e:
-        print(f"ParserError: {e}")
-        sys.exit(1)
-    try:
         engine = MazeEngine(
             config['WIDTH'],
             config['HEIGHT'],
@@ -37,10 +31,15 @@ def main() -> None:
             config['OUTPUT_FILE'],
             config.get('ALGORITHM', 'dfs'),
             config.get('RENDER_DELAY', 0.02),
+            config.get('SEED'),
         )
         engine.run()
-    except NotImplementedError as e:
-        print(f"Error: {e}")
+    except ParserError as e:
+        print(f"ParserError: {e}")
+        sys.exit(1)
+    except Exception as e:
+        print(f"Unexpected error: {e}")
+        sys.exit(1)
 
 
 if __name__ == "__main__":
