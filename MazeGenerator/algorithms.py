@@ -61,7 +61,9 @@ class MazeAlgorithm(ABC):
 
 ALGORITHMS_REGISTRY: Dict[str, Type['MazeAlgorithm']] = {}
 
-def register_algorithm(algo_name: str) -> Callable[[Type['MazeAlgorithm']], Type['MazeAlgorithm']]:
+
+def register_algorithm(algo_name: str) -> Callable[[Type['MazeAlgorithm']],
+                                                   Type['MazeAlgorithm']]:
     def decorator(cls: Type['MazeAlgorithm']) -> Type['MazeAlgorithm']:
         ALGORITHMS_REGISTRY[algo_name] = cls
         return cls
