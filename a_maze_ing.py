@@ -6,20 +6,9 @@ Bootstraps parser and generator.
 import sys
 import os
 from typing import Dict, Any
-
 from MazeGenerator.Parser import Parser
 from MazeGenerator.exceptions import ParserError
 from MazeGenerator.MazeEngine import MazeEngine
-
-
-def print_menu() -> None:
-    print("\n=== A-Maze-Ing ===")
-    print("a - Change algorithm")
-    print("g - Generate new maze")
-    print("s - Show/Hide solution path")
-    print("t - Next theme")
-    print("q - Quit")
-    print("====================")
 
 
 def main() -> None:
@@ -48,7 +37,7 @@ def main() -> None:
             config.get('ALGORITHM', 'dfs'),
             config.get('RENDER_DELAY', 0.02),
         )
-        engine.run(print_menu)
+        engine.run()
     except NotImplementedError as e:
         print(f"Error: {e}")
 
