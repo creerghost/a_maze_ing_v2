@@ -15,6 +15,7 @@ class MazeEngine:
                  height: int,
                  entry: Tuple[int, int],
                  maze_exit: Tuple[int, int],
+                 output_file: str,
                  algorithm_name: str = "dfs",
                  render_delay: float = 0.01
                  ) -> None:
@@ -22,6 +23,7 @@ class MazeEngine:
         self.height = height
         self.entry = entry
         self.maze_exit = maze_exit
+        self.output_file = output_file
         self.render_delay = render_delay
 
         self.algorithm_name: str = algorithm_name.lower()
@@ -97,8 +99,40 @@ class MazeEngine:
                 self.maze_exit,
             )
             self.solution_path = solver.solve()
+            self.export_maze()
             self.show_solution = previous_solution_state
             self._render_frame(self.current_maze)
+
+    def export_maze(self) -> None:
+        """Exports the maze state and solution into the specified text file."""
+        if not self.current_maze:
+            return
+
+        with open(self.output_file, 'w') as f:
+            for row in self.current_maze:
+                line = "".join(f"{cell:X}" for cell in row)
+                f.write(line + "\n")
+            
+            f.write("\n")
+            f.write(f"{self.entry[0]},{self.entry[1]}\n")
+            f.write(f"{self.maze_exit[0]},{self.maze_exit[1]}\n")
+            
+            if self.solution_path:
+                path_str = ""
+                for i in range(len(self.solution_path) - 1):
+                    cx, cy = self.solution_path[i]
+                    nx, ny = self.solution_path[i+1]
+                    if nx > cx:
+                        path_str += "E"
+                    elif nx < cx:
+                        path_str += "W"
+                    elif ny > cy:
+                        path_str += "S"
+                    elif ny < cy:
+                        path_str += "N"
+                f.write(path_str + "\n")
+            else:
+                f.write("\n")
 
     def print_menu(self) -> None:
         print("\n=== A-Maze-Ing ===")

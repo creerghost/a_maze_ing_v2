@@ -34,6 +34,7 @@ def main() -> None:
             config['HEIGHT'],
             config['ENTRY'],
             config['EXIT'],
+            config['OUTPUT_FILE'],
             config.get('ALGORITHM', 'dfs'),
             config.get('RENDER_DELAY', 0.02),
         )

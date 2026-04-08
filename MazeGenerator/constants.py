@@ -36,8 +36,8 @@ class MazeSymbols(StrEnum):
 
 class MazeConstants(Enum):
     N = 1
-    S = 2
-    E = 4
+    E = 2
+    S = 4
     W = 8
 
     P_42 = [
