@@ -1,5 +1,6 @@
 from typing import Dict, Any
 from MazeGenerator.exceptions import ParserError
+from MazeGenerator.algorithms import ALGORITHMS_REGISTRY
 
 
 class Parser:
@@ -54,9 +55,11 @@ class Parser:
                             result[key] = str(value)
                         elif key == 'ALGORITHM':
                             algo = value.lower()
-                            if algo not in ('dfs', 'kruskal'):
+                            if algo not in ALGORITHMS_REGISTRY:
                                 raise ParserError(
-                                    "Invalid value for key ALGORITHM"
+                                    f"Invalid value for key ALGORITHM. "
+                                    f"Available algorithms: "
+                                    f"{', '.join(ALGORITHMS_REGISTRY.keys())}"
                                 )
                             result[key] = algo
                         elif key == 'RENDER_DELAY':

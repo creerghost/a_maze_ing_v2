@@ -1,25 +1,14 @@
 import os
 import time
-from typing import Callable, List, Optional, Tuple
+from typing import List, Optional, Tuple
 from MazeGenerator.constants import Themes
-from MazeGenerator.algorithms import MazeAlgorithm
-from MazeGenerator.algorithms import DFSAlgorithm
-from MazeGenerator.algorithms import KruskalAlgorithm
+from MazeGenerator.algorithms import MazeAlgorithm, ALGORITHMS_REGISTRY
 from MazeGenerator.MazeRenderer import MazeRenderer
 from MazeGenerator.solver import MazeSolver
 
 
 class MazeEngine:
-    DFS_THEMES: List[Themes] = [
-        Themes.CLASSIC,
-        Themes.NEON,
-        Themes.LIGHT,
-    ]
-    KRUSKAL_THEMES: List[Themes] = [
-        Themes.BIOHAZARD,
-        Themes.QUARANTINE,
-        Themes.VIRUS,
-    ]
+    ALL_THEMES: List[Themes] = list(Themes)
 
     def __init__(self,
                  width: int,
@@ -36,45 +25,33 @@ class MazeEngine:
         self.render_delay = render_delay
 
         self.algorithm_name: str = algorithm_name.lower()
-        if self.algorithm_name not in ("dfs", "kruskal"):
-            raise ValueError(
-                "algorithm_name must be 'dfs' or 'kruskal'"
-            )
-        self.theme_options: List[Themes] = []
+        if self.algorithm_name not in ALGORITHMS_REGISTRY:
+            self.algorithm_name = "dfs"
         self.theme_index: int = 0
         self.show_solution: bool = False
         self.solution_path: Optional[List[Tuple[int, int]]] = None
         self.current_maze: Optional[List[List[int]]] = None
-        self._set_theme_pool_for_algorithm()
 
     @property
     def theme(self) -> Themes:
-        return self.theme_options[self.theme_index]
+        return self.ALL_THEMES[self.theme_index]
 
     def cycle_theme(self) -> None:
-        self.theme_index = (self.theme_index + 1) % len(self.theme_options)
-
-    def _set_theme_pool_for_algorithm(self) -> None:
-        if self.algorithm_name == "kruskal":
-            self.theme_options = self.KRUSKAL_THEMES[:]
-        else:
-            self.theme_options = self.DFS_THEMES[:]
-        self.theme_index = 0
+        self.theme_index = (self.theme_index + 1) % len(self.ALL_THEMES)
 
     def toggle_algorithm(self) -> None:
-        self.algorithm_name = (
-            "kruskal" if self.algorithm_name == "dfs" else "dfs"
-        )
-        self._set_theme_pool_for_algorithm()
+        algos = list(ALGORITHMS_REGISTRY.keys())
+        current_idx = algos.index(self.algorithm_name)
+        self.algorithm_name = algos[(current_idx + 1) % len(algos)]
 
     def toggle_solution_visibility(self) -> None:
         self.show_solution = not self.show_solution
 
     def _build_algorithm(self) -> MazeAlgorithm:
         """Returns the selected algorithm instance."""
-        if self.algorithm_name == "dfs":
-            return DFSAlgorithm(self.width, self.height)
-        return KruskalAlgorithm(self.width, self.height)
+        algo_class = ALGORITHMS_REGISTRY.get(self.algorithm_name,
+                                             ALGORITHMS_REGISTRY["dfs"])
+        return algo_class(self.width, self.height)
 
     def _render_frame(self, maze_state: List[List[int]]) -> None:
         """Clears screen and renders one maze state using current theme."""
@@ -86,7 +63,6 @@ class MazeEngine:
             self.maze_exit,
             self.solution_path if self.show_solution else None,
         )
-        # Convert to 2D grid chunks & return printable list of strings
         output = renderer.render()
         for row in output:
             print("".join(row))
@@ -124,15 +100,23 @@ class MazeEngine:
             self.show_solution = previous_solution_state
             self._render_frame(self.current_maze)
 
-    def run(self, print_menu: Callable[[], None]) -> None:
+    def print_menu(self) -> None:
+        print("\n=== A-Maze-Ing ===")
+        print("a - Change algorithm")
+        print("g - Generate new maze")
+        print("s - Show/Hide solution path")
+        print("t - Next theme")
+        print("q - Quit")
+        print("====================")
+
+    def run(self) -> None:
         """Main interactive loop that handles user commands."""
         self.generate_new_maze(animate=True)
 
-        # Interactive command loop
         while True:
             if self.current_maze is not None:
                 self._render_frame(self.current_maze)
-            print_menu()
+            self.print_menu()
             command = input("Select an option: ").strip().lower()
 
             if command == "q":

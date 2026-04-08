@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
-from typing import Dict, Generator, List, Tuple, Deque
-from MazeGenerator.constants import MazeConstants, Directions
+from typing import Callable, Dict, Generator, List, Tuple, Deque, Type
+from MazeGenerator.constants import MazeConstants, Directions, Algorithms
 import random
 from collections import deque
 
@@ -55,10 +55,20 @@ class MazeAlgorithm(ABC):
                     my: int = start_y + py
                     mx: int = start_x + px
                     cells.append((mx, my))
-                    self.maze[my][mx] = 15  # Solid, intact wall representation
+                    self.maze[my][mx] = 15
         return cells
 
 
+ALGORITHMS_REGISTRY: Dict[str, Type['MazeAlgorithm']] = {}
+
+def register_algorithm(algo_name: str) -> Callable[[Type['MazeAlgorithm']], Type['MazeAlgorithm']]:
+    def decorator(cls: Type['MazeAlgorithm']) -> Type['MazeAlgorithm']:
+        ALGORITHMS_REGISTRY[algo_name] = cls
+        return cls
+    return decorator
+
+
+@register_algorithm(Algorithms.DFS)
 class DFSAlgorithm(MazeAlgorithm):
     """
     Standard Depth-First Search recursive backtracker structural generator.
@@ -185,6 +195,7 @@ class _UnionFind:
         return True
 
 
+@register_algorithm(Algorithms.KRUSKAL)
 class KruskalAlgorithm(MazeAlgorithm):
     """
     Randomized Kruskal-based structural generator using Union-Find.
