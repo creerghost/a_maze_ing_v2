@@ -64,8 +64,8 @@ Additionally, the project employs a dynamic Python decorator pipeline (`@registe
 ## Team & Project Management
 
 **Roles**
-- **vlnikola**: Core backend architecture (Engine event handling, `Parser` data validations module, deterministic generation `SEED` flows, AI agent scaffolding).
-- **ngvo**: Maze mathematical algorithm implementations, recursive visual bindings, themes UI array structures (colors), structural bitmask serialization schema outputs.
+- **vlnikola**: Configured the overall project structure and import trees, built the `Parser` and `MazeRenderer`, engineered the `@register_algorithm` decorator pipeline, implemented the Depth-First Search (`DFS`) algorithm alongside with 42 pattern integration into the maze generation logic, and handled the `Makefile` and `main` executable configurations. Also mapped out the final maze serialization/saving logic.
+- **ngvo**: Built the core `MazeEngine` alongside the interactive user interface, managed the dynamic event interactions between structural components, designed the maze visual theme layouts, mathematically implemented Kruskal's algorithm and implemented the solution path algorithm with its integration into the engine.
 
 **Planning & Evolution**
 Initially, the project was mapped to simply brute-force DFS uniformly over a static looping render array. However, this heavily penalized code reuse when integrating Kruskal. We subsequently pivoted architecture actively allocating specific runtime data abstractions explicitly to a separated `MazeEngine.py`, scaling out logic gracefully.
@@ -74,13 +74,15 @@ Initially, the project was mapped to simply brute-force DFS uniformly over a sta
 The abstraction architecture succeeded wonderfully; merging mathematical arrays over UI structures became seamless. Next time, optimizing iterative Python nested list mapping dynamically during large grids (`200x200` width maps) with NumPy backend references might severely bump native compute ceiling levels to handle gigantic maps instantly. 
 
 **Tools Used**
-We natively executed Python alongside standard `Make` structures for pipeline wrappers.
+We natively executed Python alongside standard `Make` structures for pipeline wrappers. 
 
 ## Advanced Features
+- **Multiple Algorithms Architecture**: Built entirely around an extensible decorator injection structure natively supporting immediate integration of completely disconnected math behaviors (currently fully packing standard DFS & Randomized Kruskal).
+- **Live Generation Visualization**: Instantly feeds incremental build cycles iteratively direct to the Engine's display UI through python generators sequentially drawing exactly how the algorithms carve boundaries out block-by-block.
 - **Deterministic Replication**: Explicit `SEED` mappings serialize generation states flawlessly so you can recreate beautiful mazes perfectly sequentially to friends.
-- **Dynamic Theming**: Interactive command injections mapping vibrant live colors universally across DFS and Kruskal (`Biohazard`, `Virus`, `Classic`) without pausing the engine loop.
-- **Hexadecimal Bitmask Exporting**: Converts map arrays natively to exact numerical specification rules, spitting perfect logical structures iteratively upon every generation cycle cleanly.
+- **Dynamic Theming**: Interactive command injections mapping vibrant live colors universally across paths (`Biohazard`, `Virus`, `Classic`) without pausing the engine loop.
+- **Hexadecimal Bitmask Export**: Converts map arrays natively to exact numerical specification rules, spitting perfect logical structures iteratively upon every generation cycle cleanly.
 
 ## Resources
-- **Algorithms overview**: Maze generation logic was researched mathematically leveraging wikipedia's standard algorithmic paths (https://en.wikipedia.org/wiki/Maze_generation_algorithm).
-- **AI Usage**: will lie for no reason
+- **Algorithms overview**: to be added
+- **AI Usage**: AI assistants (ChatGPT / Agentic Coding) were selectively used to help decouple and refactor our early monolithic Parser ingestion code into cleaner, single-responsibility methods, resolving strict PEP8/`mypy` typing inheritance errors during the decorator pattern deployment, and rapidly debugging bitmasking collision edge cases during maze serialization. No AI generated entire architectural pipelines from scratch, functioning purely as a fast syntax debugger and refactoring consultant.
