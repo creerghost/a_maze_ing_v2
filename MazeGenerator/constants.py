@@ -39,6 +39,7 @@ class MazeConstants(Enum):
     E = 2
     S = 4
     W = 8
+    NON_PERFECT_LOOP_DENSITY = 0.15
 
     P_42 = [
         [1, 0, 0, 0, 1, 1, 1],

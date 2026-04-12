@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Callable, Dict, Generator, List, Tuple, Deque, Type
+from typing import Callable, Dict, Generator, List, Tuple, Deque, Type, Set
 from MazeGenerator.constants import MazeConstants, Directions, Algorithms
 import random
 from collections import deque
@@ -9,7 +9,10 @@ class MazeAlgorithm(ABC):
     """
     Abstract base defining the contract for maze generation algorithms.
     """
-    def __init__(self, width: int, height: int) -> None:
+    def __init__(self,
+                 width: int,
+                 height: int,
+                 perfect: bool = True) -> None:
         """
         Initializes the base attributes for maze generation.
 
@@ -19,6 +22,7 @@ class MazeAlgorithm(ABC):
         """
         self.width = width
         self.height = height
+        self.perfect = perfect
         self.maze: List[List[int]] = [[0 for _ in range(width)]
                                       for _ in range(height)]
 
@@ -58,14 +62,89 @@ class MazeAlgorithm(ABC):
                     self.maze[my][mx] = 15
         return cells
 
+    def _carve_wall_between(self,
+                            cell_a: Tuple[int, int],
+                            cell_b: Tuple[int, int]) -> bool:
+        """Opens the wall between two orthogonal neighboring cells."""
+        ax, ay = cell_a
+        bx, by = cell_b
 
-ALGORITHMS_REGISTRY: Dict[str, Type['MazeAlgorithm']] = {}
+        dx = bx - ax
+        dy = by - ay
+
+        if dx == 1 and dy == 0:
+            wall_a = MazeConstants.E.value
+            wall_b = MazeConstants.W.value
+        elif dx == -1 and dy == 0:
+            wall_a = MazeConstants.W.value
+            wall_b = MazeConstants.E.value
+        elif dx == 0 and dy == 1:
+            wall_a = MazeConstants.S.value
+            wall_b = MazeConstants.N.value
+        elif dx == 0 and dy == -1:
+            wall_a = MazeConstants.N.value
+            wall_b = MazeConstants.S.value
+        else:
+            return False
+
+        # If the wall is already open, this link does not add a new loop.
+        if ((self.maze[ay][ax] & wall_a) == 0 or
+                (self.maze[by][bx] & wall_b) == 0):
+            return False
+
+        self.maze[ay][ax] &= ~wall_a
+        self.maze[by][bx] &= ~wall_b
+        return True
+
+    def _inject_loops(self,
+                      blocked_cells: Set[Tuple[int, int]]) -> Generator[
+                          List[List[int]], None, None]:
+        """
+        Private post-process that makes the maze non-perfect by opening extra
+        random walls at a fixed medium density.
+        """
+        if self.perfect:
+            return
+
+        candidates: List[Tuple[Tuple[int, int], Tuple[int, int]]] = []
+        for y in range(self.height):
+            for x in range(self.width):
+                if (x, y) in blocked_cells:
+                    continue
+
+                if x + 1 < self.width and (x + 1, y) not in blocked_cells:
+                    candidates.append(((x, y), (x + 1, y)))
+                if y + 1 < self.height and (x, y + 1) not in blocked_cells:
+                    candidates.append(((x, y), (x, y + 1)))
+
+        if not candidates:
+            return
+
+        random.shuffle(candidates)
+        requested = max(
+            1,
+            int(
+                len(candidates) *
+                MazeConstants.NON_PERFECT_LOOP_DENSITY.value
+            )
+        )
+
+        carved = 0
+        for cell_a, cell_b in candidates:
+            if carved >= requested:
+                break
+            if self._carve_wall_between(cell_a, cell_b):
+                carved += 1
+                yield self.maze
+
+
+ALGORITHMS_DICT: Dict[str, Type['MazeAlgorithm']] = {}
 
 
 def register_algorithm(algo_name: str) -> Callable[[Type['MazeAlgorithm']],
                                                    Type['MazeAlgorithm']]:
     def decorator(cls: Type['MazeAlgorithm']) -> Type['MazeAlgorithm']:
-        ALGORITHMS_REGISTRY[algo_name] = cls
+        ALGORITHMS_DICT[algo_name] = cls
         return cls
     return decorator
 
@@ -75,8 +154,11 @@ class DFSAlgorithm(MazeAlgorithm):
     """
     Standard Depth-First Search recursive backtracker structural generator.
     """
-    def __init__(self, width: int, height: int) -> None:
-        super().__init__(width, height)
+    def __init__(self,
+                 width: int,
+                 height: int,
+                 perfect: bool = True) -> None:
+        super().__init__(width, height, perfect)
 
     def generate(self) -> Generator[List[List[int]], None, None]:
         for y in range(self.height):
@@ -139,6 +221,10 @@ class DFSAlgorithm(MazeAlgorithm):
             if not moved:
                 stack.pop()
             yield self.maze
+
+        blocked_cells = set(pattern_cells)
+        for state in self._inject_loops(blocked_cells):
+            yield state
 
 
 class _UnionFind:
@@ -205,15 +291,18 @@ class KruskalAlgorithm(MazeAlgorithm):
     It shuffles possible links between neighbor cells and opens a wall only
     when the two cells are in different groups.
     """
-    def __init__(self, width: int, height: int) -> None:
-        super().__init__(width, height)
+    def __init__(self,
+                 width: int,
+                 height: int,
+                 perfect: bool = True) -> None:
+        super().__init__(width, height, perfect)
 
     def generate(self) -> Generator[List[List[int]], None, None]:
         for y in range(self.height):
             for x in range(self.width):
                 self.maze[y][x] = 15
 
-        blocked = set(self.apply_42_pattern())
+        blocked: Set[Tuple[int, int]] = set(self.apply_42_pattern())
 
         nodes: List[Tuple[int, int]] = []
         for y in range(self.height):
@@ -261,3 +350,6 @@ class KruskalAlgorithm(MazeAlgorithm):
         if not carved:
             # Engine still receives final state for tiny mazes
             yield self.maze
+
+        for state in self._inject_loops(blocked):
+            yield state

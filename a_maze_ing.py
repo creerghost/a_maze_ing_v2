@@ -31,6 +31,7 @@ def main() -> None:
             config['OUTPUT_FILE'],
             config.get('ALGORITHM', 'dfs'),
             config.get('RENDER_DELAY', 0.02),
+            config.get('PERFECT', True),
             config.get('SEED'),
         )
         engine.run()
