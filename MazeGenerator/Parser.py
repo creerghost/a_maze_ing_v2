@@ -1,5 +1,5 @@
 from typing import Dict, Any
-from MazeGenerator.algorithms import ALGORITHMS_REGISTRY
+from MazeGenerator.algorithms import ALGORITHMS_DICT
 
 
 class ParserError(Exception):
@@ -72,11 +72,11 @@ class Parser:
                     parsed[key] = (val == 'true')
                 elif key in ('ALGORITHM', 'ALGO'):
                     algo = value.lower()
-                    if algo not in ALGORITHMS_REGISTRY:
+                    if algo not in ALGORITHMS_DICT:
                         raise ParserError(
                             f"Invalid value for key {key}. "
                             f"Available algorithms: "
-                            f"{', '.join(ALGORITHMS_REGISTRY.keys())}"
+                            f"{', '.join(ALGORITHMS_DICT.keys())}"
                         )
                     parsed['ALGORITHM'] = algo
                 else:

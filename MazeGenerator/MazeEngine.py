@@ -3,13 +3,14 @@ import time
 import random
 from typing import List, Optional, Tuple
 from MazeGenerator.constants import Themes
-from MazeGenerator.algorithms import MazeAlgorithm, ALGORITHMS_REGISTRY
+from MazeGenerator.algorithms import MazeAlgorithm
+from MazeGenerator.algorithms import ALGORITHMS_DICT
 from MazeGenerator.MazeRenderer import MazeRenderer
 from MazeGenerator.MazeSolver import MazeSolver
 
 
 class MazeEngine:
-    ALL_THEMES: List[Themes] = list(Themes)
+    themes_list: List[Themes] = list(Themes)
 
     def __init__(self,
                  width: int,
@@ -19,6 +20,7 @@ class MazeEngine:
                  output_file: str,
                  algorithm_name: str,
                  render_delay: float = 0.01,
+                 perfect: bool = True,
                  seed: Optional[int] = None
                  ) -> None:
         self.width = width
@@ -29,6 +31,7 @@ class MazeEngine:
         self.render_delay = render_delay
 
         self.algorithm_name: str = algorithm_name.lower()
+        self.perfect: bool = perfect
         self.theme_index: int = 0
         self.show_solution: bool = False
         self.solution_path: Optional[List[Tuple[int, int]]] = None
@@ -38,13 +41,13 @@ class MazeEngine:
 
     @property
     def theme(self) -> Themes:
-        return self.ALL_THEMES[self.theme_index]
+        return self.themes_list[self.theme_index]
 
     def cycle_theme(self) -> None:
-        self.theme_index = (self.theme_index + 1) % len(self.ALL_THEMES)
+        self.theme_index = (self.theme_index + 1) % len(self.themes_list)
 
     def toggle_algorithm(self) -> None:
-        algos = list(ALGORITHMS_REGISTRY.keys())
+        algos = list(ALGORITHMS_DICT.keys())
         current_idx = algos.index(self.algorithm_name)
         self.algorithm_name = algos[(current_idx + 1) % len(algos)]
 
@@ -53,9 +56,13 @@ class MazeEngine:
 
     def _build_algorithm(self) -> MazeAlgorithm:
         """Returns the selected algorithm instance."""
-        algo_class = ALGORITHMS_REGISTRY.get(self.algorithm_name,
-                                             ALGORITHMS_REGISTRY["dfs"])
-        return algo_class(self.width, self.height)
+        algo_class = ALGORITHMS_DICT.get(self.algorithm_name,
+                                         ALGORITHMS_DICT["dfs"])
+        return algo_class(
+            self.width,
+            self.height,
+            perfect=self.perfect,
+        )
 
     def _render_frame(self, maze_state: List[List[int]]) -> None:
         """Clears screen and renders one maze state using current theme."""
