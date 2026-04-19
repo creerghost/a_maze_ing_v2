@@ -1,3 +1,6 @@
+"""
+Logical controller mapping interactive states bridging generative steps.
+"""
 import os
 import time
 import random
@@ -11,6 +14,9 @@ from MazeGenerator.MazeSolver import MazeSolver
 
 
 class MazeEngine:
+    """
+    Central orchestration handler structurally resolving live mazes gracefully.
+    """
     themes_list: List[Themes] = list(Themes)
 
     def __init__(self,
@@ -25,6 +31,10 @@ class MazeEngine:
                  seed: Optional[int] = None,
                  animate: bool = True
                  ) -> None:
+        """
+        Initialize structural bounds preparing
+        runtime variables securely.
+        """
         self.width = width
         self.height = height
         self.entry = entry
@@ -44,17 +54,21 @@ class MazeEngine:
 
     @property
     def theme(self) -> Themes:
+        """Return currently bound visual theme configuration natively."""
         return self.themes_list[self.theme_index]
 
     def cycle_theme(self) -> None:
+        """Rotate styling aesthetics sequentially updating active palette."""
         self.theme_index = (self.theme_index + 1) % len(self.themes_list)
 
     def toggle_algorithm(self) -> None:
+        """Rotate bounded algorithm targets directly flipping strategy."""
         algos = list(ALGORITHMS_DICT.keys())
         current_idx = algos.index(self.algorithm_name)
         self.algorithm_name = algos[(current_idx + 1) % len(algos)]
 
     def toggle_solution_visibility(self) -> None:
+        """Invert visual overlay boolean determining solution visibility."""
         self.show_solution = not self.show_solution
 
     def _build_algorithm(self) -> MazeAlgorithm:
@@ -159,6 +173,7 @@ class MazeEngine:
                 f.write("\n")
 
     def print_menu(self) -> None:
+        """Output available interaction commands dynamically."""
         print("\n=== A-Maze-Ing ===")
         print("a - Change algorithm")
         print("g - Generate new maze")

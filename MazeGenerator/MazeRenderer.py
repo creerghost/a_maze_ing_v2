@@ -1,3 +1,6 @@
+"""
+System translation framework visualizing grids stringwise elegantly.
+"""
 from typing import List, Tuple, Optional
 from MazeGenerator.constants import Themes, MazeConstants, MazeSymbols
 
@@ -10,6 +13,7 @@ class MazeRenderer:
                  entry: Optional[Tuple[int, int]] = None,
                  maze_exit: Optional[Tuple[int, int]] = None,
                  solution_path: Optional[List[Tuple[int, int]]] = None):
+        """Initialize the mapping parameters bounding physical grids."""
         self.maze = maze
         self.theme = theme
         self.entry = entry

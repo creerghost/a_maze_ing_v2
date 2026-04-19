@@ -1,14 +1,19 @@
+"""
+Core constants mapping algorithms, engine parameters, and path vectors.
+"""
 from enum import Enum, StrEnum
 from dataclasses import dataclass
 
 
 class Algorithms(StrEnum):
+    """Available algorithmic engine strategies."""
     DFS = "dfs"
     KRUSKAL = "kruskal"
 
 
 @dataclass
 class Theme:
+    """Dataclass storing ANSI terminal color mapping for rendering."""
     name: str
     wall_color: str
     path_color: str
@@ -16,6 +21,7 @@ class Theme:
 
 
 class Themes(Enum):
+    """Collection of pre-configured visual display color palettes."""
     CLASSIC = Theme("classic", "\033[97m", "\033[91m", "\033[90m")
 
     BIOHAZARD = Theme("biohazard", "\033[38;5;203m", "\033[38;5;39m",
@@ -27,6 +33,7 @@ class Themes(Enum):
 
 
 class MazeSymbols(StrEnum):
+    """Symbols used directly to translate the matrix into strings."""
     WALL = "██"
     PATH = "  "
     ENTRY = "●→"
@@ -35,6 +42,7 @@ class MazeSymbols(StrEnum):
 
 
 class MazeConstants(Enum):
+    """Bitmask numeric weights bridging logical layout parameters."""
     N = 1
     E = 2
     S = 4
@@ -51,6 +59,7 @@ class MazeConstants(Enum):
 
 
 class Directions(Enum):
+    """Standardized geometric vectors computing neighbor logic iteratively."""
     N = (0, -1)
     S = (0, 1)
     E = (1, 0)

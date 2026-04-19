@@ -1,8 +1,12 @@
+"""
+Validating dictionary handler evaluating ingestion commands sequentially.
+"""
 from typing import Dict, Any
 from MazeGenerator.algorithms import ALGORITHMS_DICT
 
 
 class ParserError(Exception):
+    """Custom exception raised safely capturing invalid config bindings."""
     pass
 
 

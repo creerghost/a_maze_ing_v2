@@ -17,6 +17,7 @@ except AttributeError as e:
 
 
 def main() -> None:
+    """Initialize external variables and orchestrate environment loops."""
     if len(sys.argv) != 2:
         print("Usage: python a_maze_ing.py <config_file>")
         sys.exit(1)

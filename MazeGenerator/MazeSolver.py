@@ -1,3 +1,6 @@
+"""
+Solver array module computing optimal pathways recursively locally.
+"""
 from collections import deque
 from typing import List, Tuple, Optional
 
@@ -5,13 +8,18 @@ from MazeGenerator.constants import MazeConstants
 
 
 class MazeSolver:
+    """
+    Computes shortest path resolution arrays internally traversing grid spaces.
+    """
     def __init__(self, maze: List[List[int]], entry: Tuple[int, int],
                  maze_exit: Tuple[int, int]) -> None:
+        """Initialize solving algorithms securely onto target coordinates."""
         self.maze = maze
         self.entry = entry
         self.maze_exit = maze_exit
 
     def solve(self) -> Optional[List[Tuple[int, int]]]:
+        """Execute pathfinding logic connecting mapped constraints securely."""
         height = len(self.maze)
         width = len(self.maze[0]) if self.maze else 0
 

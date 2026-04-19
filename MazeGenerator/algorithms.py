@@ -1,3 +1,6 @@
+"""
+Generative graphing logic holding dynamic logic resolving structures cleanly.
+"""
 from abc import ABC, abstractmethod
 from typing import Callable, Dict, Generator, List, Tuple, Deque, Type, Set
 from MazeGenerator.constants import MazeConstants, Directions, Algorithms
@@ -10,6 +13,7 @@ ALGORITHMS_DICT: Dict[str, Type['MazeAlgorithm']] = {}
 
 def register_algorithm(algo_name: str) -> Callable[[Type['MazeAlgorithm']],
                                                    Type['MazeAlgorithm']]:
+    """Capture Strategy patterns logging endpoints into dictionaries."""
     def decorator(cls: Type['MazeAlgorithm']) -> Type['MazeAlgorithm']:
         ALGORITHMS_DICT[algo_name] = cls
         return cls
@@ -161,6 +165,7 @@ class DFSAlgorithm(MazeAlgorithm):
         super().__init__(width, height, perfect)
 
     def generate(self) -> Generator[List[List[int]], None, None]:
+        """Navigate nodes sequentially yielding visually stable structures."""
         for y in range(self.height):
             for x in range(self.width):
                 self.maze[y][x] = 15
@@ -298,6 +303,7 @@ class KruskalAlgorithm(MazeAlgorithm):
         super().__init__(width, height, perfect)
 
     def generate(self) -> Generator[List[List[int]], None, None]:
+        """Join isolated trees structurally computing visual arrays cleanly."""
         for y in range(self.height):
             for x in range(self.width):
                 self.maze[y][x] = 15
