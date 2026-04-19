@@ -65,7 +65,7 @@ class Parser:
                 elif key in ('ENTRY', 'EXIT'):
                     x, y = value.split(',')
                     parsed[key] = (int(x), int(y))
-                elif key == 'PERFECT':
+                elif key in ('PERFECT', 'ANIMATE'):
                     val = value.lower()
                     if val not in ('true', 'false'):
                         raise ParserError(f"Invalid boolean {value} for {key}")
@@ -96,6 +96,7 @@ class Parser:
         parsed.setdefault('ALGORITHM', 'dfs')
         parsed.setdefault('RENDER_DELAY', 0.02)
         parsed.setdefault('PERFECT', True)
+        parsed.setdefault('ANIMATE', True)
         parsed.setdefault('SEED', None)
 
         if parsed['WIDTH'] <= 0 or parsed['HEIGHT'] <= 0:

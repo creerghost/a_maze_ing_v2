@@ -5,6 +5,17 @@ import random
 from collections import deque
 
 
+ALGORITHMS_DICT: Dict[str, Type['MazeAlgorithm']] = {}
+
+
+def register_algorithm(algo_name: str) -> Callable[[Type['MazeAlgorithm']],
+                                                   Type['MazeAlgorithm']]:
+    def decorator(cls: Type['MazeAlgorithm']) -> Type['MazeAlgorithm']:
+        ALGORITHMS_DICT[algo_name] = cls
+        return cls
+    return decorator
+
+
 class MazeAlgorithm(ABC):
     """
     Abstract base defining the contract for maze generation algorithms.
@@ -136,17 +147,6 @@ class MazeAlgorithm(ABC):
             if self._carve_wall_between(cell_a, cell_b):
                 carved += 1
                 yield self.maze
-
-
-ALGORITHMS_DICT: Dict[str, Type['MazeAlgorithm']] = {}
-
-
-def register_algorithm(algo_name: str) -> Callable[[Type['MazeAlgorithm']],
-                                                   Type['MazeAlgorithm']]:
-    def decorator(cls: Type['MazeAlgorithm']) -> Type['MazeAlgorithm']:
-        ALGORITHMS_DICT[algo_name] = cls
-        return cls
-    return decorator
 
 
 @register_algorithm(Algorithms.DFS)

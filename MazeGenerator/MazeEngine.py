@@ -1,6 +1,7 @@
 import os
 import time
 import random
+import sys
 from typing import List, Optional, Tuple
 from MazeGenerator.constants import Themes
 from MazeGenerator.algorithms import MazeAlgorithm
@@ -21,7 +22,8 @@ class MazeEngine:
                  algorithm_name: str,
                  render_delay: float = 0.01,
                  perfect: bool = True,
-                 seed: Optional[int] = None
+                 seed: Optional[int] = None,
+                 animate: bool = True
                  ) -> None:
         self.width = width
         self.height = height
@@ -32,6 +34,7 @@ class MazeEngine:
 
         self.algorithm_name: str = algorithm_name.lower()
         self.perfect: bool = perfect
+        self.animate: bool = animate
         self.theme_index: int = 0
         self.show_solution: bool = False
         self.solution_path: Optional[List[Tuple[int, int]]] = None
@@ -116,7 +119,11 @@ class MazeEngine:
                 self.maze_exit,
             )
             self.solution_path = solver.solve()
-            self.export_maze()
+            try:
+                self.export_maze()
+            except IOError as e:
+                print(f"Error exporting maze: {e}")
+                sys.exit(1)
             self.show_solution = previous_solution_state
             self._render_frame(self.current_maze)
 
@@ -162,21 +169,26 @@ class MazeEngine:
 
     def run(self) -> None:
         """Main interactive loop that handles user commands."""
-        self.generate_new_maze(animate=True)
+        self.generate_new_maze(animate=self.animate)
 
         while True:
             if self.current_maze is not None:
                 self._render_frame(self.current_maze)
             self.print_menu()
-            command = input("Select an option: ").strip().lower()
+            try:
+                command = input("Select an option: ").strip().lower()
+            except EOFError:
+                print("EOF")
+                command = "q"
 
             if command == "q":
+                print("Goodbye!")
                 break
             elif command == "a":
                 self.toggle_algorithm()
-                self.generate_new_maze(animate=True)
+                self.generate_new_maze(animate=self.animate)
             elif command == "g":
-                self.generate_new_maze(animate=True)
+                self.generate_new_maze(animate=self.animate)
             elif command == "s":
                 self.toggle_solution_visibility()
             elif command == "t":

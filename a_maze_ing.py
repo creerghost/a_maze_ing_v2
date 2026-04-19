@@ -6,8 +6,14 @@ Bootstraps parser and generator.
 import sys
 import os
 from typing import Dict, Any
-from MazeGenerator.Parser import Parser, ParserError
-from MazeGenerator.MazeEngine import MazeEngine
+try:
+    from MazeGenerator.Parser import Parser, ParserError
+    from MazeGenerator.MazeEngine import MazeEngine
+except AttributeError as e:
+    print("Registration Error: Invalid algorithm property provided.\n"
+          "Ensure @register_algorithm uses a valid Algorithms enum.\n"
+          f"Detailed Error: {e}")
+    sys.exit(1)
 
 
 def main() -> None:
@@ -33,11 +39,15 @@ def main() -> None:
             config.get('RENDER_DELAY', 0.02),
             config.get('PERFECT', True),
             config.get('SEED'),
+            config.get('ANIMATE', True),
         )
         engine.run()
     except ParserError as e:
         print(f"ParserError: {e}")
         sys.exit(1)
+    except KeyboardInterrupt:
+        print("\nInterrupted by user. Exiting...")
+        sys.exit(0)
     except Exception as e:
         print(f"Unexpected error: {e}")
         sys.exit(1)
