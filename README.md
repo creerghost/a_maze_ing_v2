@@ -139,6 +139,46 @@ Our architecture was intentionally built with extensibility and reusability in m
 
 ---
 
+## Python Library Usage (mazegen)
+
+The maze generation system is explicitly built as a standalone module (`MazeGenerator`) capable of being installed natively via `pip` and imported into future projects. 
+
+### Instantiation and Parameters
+Once the `.whl` package is installed, you can easily instantiate the system programmatically by passing your custom parameters directly into the `MazeEngine` constructor.
+
+### Example Usage: Accessing Structures and Solutions
+```python
+from MazeGenerator import MazeEngine
+
+# 1. Instantiate the generator and pass custom parameters
+generator = MazeEngine(
+    width=20, 
+    height=20, 
+    entry=(0, 0), 
+    maze_exit=(19, 19), 
+    output_file="exported_maze.txt",
+    algorithm_name="dfs",  # 'dfs' or 'kruskal'
+    perfect=True,
+    animate=False, # Disable terminal rendering for silent background generation
+    seed=12345
+)
+
+# 2. Generate the maze and auto-solve
+generator.generate_new_maze(animate=False)
+
+# 3. Access the generated grid structure (List[List[int]] representing bitmasks)
+maze_structure = generator.current_maze
+if maze_structure:
+    print(f"Top-Left Cell bitmask: {maze_structure[0][0]}")
+
+# 4. Access the calculated solution path (List[Tuple[int, int]])
+solution = generator.solution_path
+if solution:
+    print(f"Solution steps: {len(solution)}")
+```
+
+---
+
 ## Instructions
 
 We've automated the orchestration wrapper securely into a `Make` structure to ease virtual environment mapping and package requirements dynamically.
