@@ -5,7 +5,7 @@ PYTHON_VENV = $(VENV)/bin/python3
 MAIN = a_maze_ing.py
 CONFIG = config.txt
 
-.PHONY: all venv install run clean lint lint-strict build test-install
+.PHONY: all venv install run debug clean lint lint-strict build test-install
 
 all: install build
 
@@ -22,6 +22,9 @@ install: venv
 
 run: venv
 	$(PYTHON_VENV) $(MAIN) $(CONFIG)
+
+debug: venv
+	$(PYTHON_VENV) -m pdb $(MAIN) $(CONFIG)
 
 clean:
 	rm -rf $(VENV) dist build *.egg-info .mypy_cache .pytest_cache
