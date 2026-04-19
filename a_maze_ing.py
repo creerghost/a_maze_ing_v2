@@ -46,7 +46,7 @@ def main() -> None:
         print(f"ParserError: {e}")
         sys.exit(1)
     except KeyboardInterrupt:
-        print("\nInterrupted by user. Exiting...")
+        print("\nInterrupted by user. Goodbye!")
         sys.exit(0)
     except Exception as e:
         print(f"Unexpected error: {e}")
